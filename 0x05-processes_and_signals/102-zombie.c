@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 /**
- * infinite_while - function to run infinite loop
+ * infinite_while - function that containts an infinite loop
+ *
  * Return: 0
  */
 int infinite_while(void)
@@ -16,21 +18,22 @@ int infinite_while(void)
 }
 
 /**
- * main - program to fork 5 child processes
- * Return: infinite_while
+ * main - Entry point
+ *
+ * Return: Always 0
  */
 int main(void)
 {
-	pid_t zombie;
-	size_t n = 0;
+	int i;
 
-	for (; n < 5; n++)
+	for (i = 0; i < 5; i++)
 	{
-		zombie = fork();
-		if (zombie == 0)
-			exit(0);
-		else
-			printf("Zombie process created, PID: %d\n", zombie);
+		if (fork() == 0)
+		{
+			dprintf(1, "Zombie process created, PID: %d\n", getpid());
+			return (0);
+		}
 	}
-	return (infinite_while());
+	infinite_while();
+	return (0);
 }
