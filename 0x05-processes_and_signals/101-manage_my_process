@@ -1,32 +1,25 @@
 #!/usr/bin/env bash
-# Script to manage process and perform tasks
-file="/var/run/my_process.pid"
-func_start()
-{
-	./manage_my_process &
-	echo "$!" > "$file"
-}
-
-func_stop()
-{
-	kill "$(cat $file)"
-	rm $file
-}
+# script that manages the my_process file
 case "$1" in
-     start)
-	func_start
+    start)
+	./manage_my_process &
+	echo "$!" > /var/run/my_process.pid
 	echo "manage_my_process started"
 	;;
-     stop)
-	func_stop
+    stop)
+	sudo kill -15 "$(cat /var/run/my_process.pid)"
+	rm -f /var/run/my_process.pid
 	echo "manage_my_process stopped"
 	;;
-     restart)
-	func_stop
-	func_start
+    restart)
+	sudo kill -15 "$(cat /var/run/my_process.pid)"
+	rm -f /var/run/my_process.pid
+	./manage_my_process &
+	echo "$!" > /var/run/my_process.pid
 	echo "manage_my_process restarted"
 	;;
-     *)
+    *)
 	echo "Usage: manage_my_process {start|stop|restart}"
 	;;
 esac
+exit 0
